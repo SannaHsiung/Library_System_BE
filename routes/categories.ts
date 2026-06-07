@@ -1,7 +1,9 @@
 import express from "express";
 import { validateCategory } from "../schemas/Category";
+import { PrismaClient } from "@prisma/client";
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 export interface Category {
   category: string;
@@ -50,9 +52,12 @@ export function getCategories() {
   return categories;
 }
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const categories = await prisma.category.findMany();
   return res.send(categories);
 });
+
+//nedan ska fixas
 
 router.get("/:categoryRoute", (req, res) => {
   const category = categories.find(

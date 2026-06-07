@@ -1,8 +1,10 @@
 import express from "express";
-import { Category, getCategories } from "./categories";
+import { Category } from "./categories";
 import { validateArticle } from "../schemas/Article";
+import { PrismaClient } from "@prisma/client";
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 interface AudioBook {
   title: string;
@@ -36,9 +38,12 @@ const audioBooks: AudioBook[] = [
   },
 ];
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const audioBooks = await prisma.audioBook.findMany();
   return res.send(audioBooks);
 });
+
+//nedan ska fixas
 
 router.get("/:titleRoute", (req, res) => {
   const audioBook = audioBooks.find((ab) => ab.title === req.params.titleRoute);

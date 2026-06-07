@@ -1,8 +1,10 @@
 import express from "express";
-import { Category, getCategories } from "./categories";
+import { Category } from "./categories";
 import { validateArticle } from "../schemas/Article";
+import { PrismaClient } from "@prisma/client";
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 interface Dvd {
   title: string;
@@ -50,9 +52,12 @@ const dvds: Dvd[] = [
   },
 ];
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const dvds = await prisma.dvd.findMany();
   return res.send(dvds);
 });
+
+//nedan ska fixas
 
 router.get("/:titleRoute", (req, res) => {
   const dvd = dvds.find((d) => d.title === req.params.titleRoute);

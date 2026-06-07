@@ -1,8 +1,10 @@
 import express from "express";
-import { Category, getCategories } from "./categories";
+import { Category } from "./categories";
 import { validateArticle } from "../schemas/Article";
+import { PrismaClient } from "@prisma/client";
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 interface ReferenceBook {
   title: string;
@@ -32,9 +34,12 @@ const referenceBooks: ReferenceBook[] = [
   },
 ];
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const referenceBooks = await prisma.referenceBook.findMany();
   return res.send(referenceBooks);
 });
+
+//nedan ska fixas
 
 router.get("/:titleRoute", (req, res) => {
   const referenceBook = referenceBooks.find(

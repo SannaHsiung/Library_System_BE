@@ -18,6 +18,6 @@ app.use("/api/dvds", dvds);
 app.use("/api/audioBooks", audioBooks);
 app.use("/api/referenceBooks", referenceBooks);
 
-const PORT = 584;
+const PORT = process.env.PORT || 584;
 
 app.listen(PORT, () => console.log("Listening on port " + PORT));

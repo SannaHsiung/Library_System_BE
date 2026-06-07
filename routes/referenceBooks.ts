@@ -35,4 +35,15 @@ router.get("/", (req, res) => {
   return res.send(referenceBooks);
 });
 
+router.get("/:titleRoute", (req, res) => {
+  const referenceBook = referenceBooks.find(
+    (refBook) => refBook.title === req.params.titleRoute,
+  );
+
+  if (!referenceBook)
+    return res.status(404).send("Kan inte hitta uppslagsboken");
+
+  return res.send(referenceBook);
+});
+
 export default router;

@@ -39,4 +39,12 @@ router.get("/", (req, res) => {
   return res.send(audioBooks);
 });
 
+router.get("/:titleRoute", (req, res) => {
+  const audioBook = audioBooks.find((ab) => ab.title === req.params.titleRoute);
+
+  if (!audioBook) return res.status(404).send("Kan inte hitta ljudboken");
+
+  return res.send(audioBook);
+});
+
 export default router;

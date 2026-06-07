@@ -59,4 +59,12 @@ router.get("/", (req, res) => {
   return res.send(books);
 });
 
+router.get("/:titleRoute", (req, res) => {
+  const book = books.find((b) => b.title === req.params.titleRoute);
+
+  if (!book) return res.status(404).send("Kan inte hitta boken");
+
+  return res.send(book);
+});
+
 export default router;

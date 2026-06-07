@@ -49,4 +49,14 @@ router.get("/", (req, res) => {
   return res.send(categories);
 });
 
+router.get("/:categoryRoute", (req, res) => {
+  const category = categories.find(
+    (c) => c.category === req.params.categoryRoute,
+  );
+
+  if (!category) return res.status(404).send("Kan inte hitta kategorien");
+
+  return res.send(category);
+});
+
 export default router;

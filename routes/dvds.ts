@@ -55,56 +55,74 @@ router.get("/:id", async (req, res) => {
   return res.send(dvd);
 });
 
-//håller på att fixa
-//nedan ska fixas
-
-router.post("/", (req, res) => {
+/*
+router.post("/", async (req, res) => {
   const validation = validateArticle(req.body);
 
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0]?.message);
 
-  const dvd: Dvd = {
-    id: Date.now().toString(),
-    title: req.body.title,
-    runTimeMinutes: req.body.runTimeMinutes,
-    type: req.body.type,
-    isBorrowable: true,
-    categoryId: req.body.categoryId.category,
-  };
+  const category = await prisma.category.findFirst({
+    where: { id: req.body.categoryId },
+  });
 
-  dvds.push(dvd);
+  if (!category) {
+    return res.status(400).send("Kategorien finns inte");
+  }
 
-  return res.status(201).send(dvd);
+  const newDvd = await prisma.dvd.create({
+    data: {
+      title: req.body.title,
+      runTimeMinutes: req.body.runTimeMinutes,
+      type: req.body.type,
+      isBorrowable: req.body.isBorrowable,
+      categoryId: req.body.categoryId,
+    },
+  });
+
+  return res.status(201).send(newDvd);
 });
+*/
 
-router.put("/:id", (req, res) => {
-  const dvd = dvds.find((d) => d.title === req.params.id);
+/*
+router.put("/:id", async (req, res) => {
+  const dvd = await prisma.dvd.findFirst({
+    where: { id: req.params.id },
+  });
 
-  if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
+  if (!dvd) return res.status(404).send("Kan inte hitta ljudboken");
 
   const validation = validateArticle(req.body);
 
   if (!validation.success)
     return res.status(404).send(validation.error.issues[0]?.message);
 
-  dvd.title = req.body.title;
-  dvd.runTimeMinutes = req.body.runTimeMinutes;
-  dvd.type = req.body.type;
-  dvd.isBorrowable = true;
-  dvd.categoryId = req.body.categoryId.category;
+  const updatedDvd = await prisma.dvd.update({
+    where: { id: req.params.id },
+    data: {
+      title: req.body.title,
+      runTimeMinutes: req.body.runTimeMinutes,
+      type: req.body.type,
+      isBorrowable: req.body.isBorrowable,
+      categoryId: req.body.categoryId,
+    },
+  });
 
-  return res.send(dvd);
+  return res.send(updatedDvd);
 });
+*/
 
-router.delete("/:id", (req, res) => {
-  const dvd = dvds.find((d) => d.title === req.params.id);
+router.delete("/:id", async (req, res) => {
+  const dvd = await prisma.dvd.findFirst({
+    where: { id: req.params.id },
+  });
 
-  if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
+  if (!dvd) return res.status(404).send("Kan inte hitta kategorien");
 
-  dvds.splice(dvds.indexOf(dvd), 1);
+  const deletedDvd = await prisma.dvd.delete({
+    where: { id: req.params.id },
+  });
 
-  return res.send(dvd);
+  return res.send(deletedDvd);
 });
-
 export default router;

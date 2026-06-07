@@ -58,58 +58,76 @@ router.get("/:id", async (req, res) => {
   return res.send(dvd);
 });
 
-//håller på att fixa
-//nedan ska fixas
-
-router.post("/", (req, res) => {
+/*
+router.post("/", async (req, res) => {
   const validation = validateArticle(req.body);
 
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0]?.message);
 
-  const book: Book = {
-    id: Date.now().toString(),
-    title: req.body.title,
-    author: req.body.author,
-    nbrPages: req.body.nbrPages,
-    type: req.body.type,
-    isBorrowable: true,
-    categoryId: req.body.categoryId.category,
-  };
+  const category = await prisma.category.findFirst({
+    where: { id: req.body.categoryId },
+  });
 
-  books.push(book);
+  if (!category) {
+    return res.status(400).send("Kategorien finns inte");
+  }
 
-  return res.status(201).send(book);
+  const newBook = await prisma.book.create({
+    data: {
+      title = req.body.title;
+      author = req.body.author;
+      type = req.body.type;
+      nbrPages = req.body.nbrPages;
+      isBorrowable = true;
+      categoryId: req.body.categoryId,
+    },
+  });
+
+  return res.status(201).send(newBook);
 });
+*/
 
-router.put("/:id", (req, res) => {
-  const book = books.find((b) => b.title === req.params.id);
+/*
+router.put("/:id", async (req, res) => {
+  const book = await prisma.book.findFirst({
+    where: { id: req.params.id },
+  });
 
-  if (!book) return res.status(404).send("Kan inte hitta boken");
+  if (!book) return res.status(404).send("Kan inte hitta ljudboken");
 
   const validation = validateArticle(req.body);
 
   if (!validation.success)
     return res.status(404).send(validation.error.issues[0]?.message);
 
-  book.title = req.body.title;
-  book.author = req.body.author;
-  book.type = req.body.type;
-  book.nbrPages = req.body.nbrPages;
-  book.isBorrowable = true;
-  book.categoryId = req.body.categoryId.category;
+  const updatedBook = await prisma.book.update({
+    where: { id: req.params.id },
+    data: {
+      title = req.body.title;
+      type = req.body.type;
+      author = req.body.author;
+      nbrPages = req.body.nbrPages;
+      isBorrowable = req.body.isBorrowable;
+      categoryId = req.body.categoryId.category;
+    },
+  });
 
-  return res.send(book);
+  return res.send(updatedBook);
 });
+*/
 
-router.delete("/:id", (req, res) => {
-  const book = books.find((b) => b.title === req.params.id);
+router.delete("/:id", async (req, res) => {
+  const book = await prisma.book.findFirst({
+    where: { id: req.params.id },
+  });
 
-  if (!book) return res.status(404).send("Kan inte hitta boken");
+  if (!book) return res.status(404).send("Kan inte hitta kategorien");
 
-  books.splice(books.indexOf(book), 1);
+  const deletedBook = await prisma.book.delete({
+    where: { id: req.params.id },
+  });
 
-  return res.send(book);
+  return res.send(deletedBook);
 });
-
 export default router;

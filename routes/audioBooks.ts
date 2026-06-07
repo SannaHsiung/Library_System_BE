@@ -55,56 +55,74 @@ router.get("/:id", async (req, res) => {
   return res.send(audioBook);
 });
 
-//håller på att fixa
-//nedan ska fixas
-
-router.post("/", (req, res) => {
+/*
+router.post("/", async (req, res) => {
   const validation = validateArticle(req.body);
 
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0]?.message);
 
-  const audioBook: AudioBook = {
-    id: Date.now().toString(),
-    title: req.body.title,
-    runTimeMinutes: req.body.runTimeMinutes,
-    type: req.body.type,
-    isBorrowable: true,
-    categoryId: req.body.categoryId.category,
-  };
+  const category = await prisma.category.findFirst({
+    where: { id: req.body.categoryId },
+  });
 
-  audioBooks.push(audioBook);
+  if (!category) {
+    return res.status(400).send("Kategorien finns inte");
+  }
 
-  return res.status(201).send(audioBook);
+  const newAudioBook = await prisma.audioBook.create({
+    data: {
+      title: req.body.title,
+      runTimeMinutes: req.body.runTimeMinutes,
+      type: req.body.type,
+      isBorrowable: req.body.isBorrowable,
+      categoryId: req.body.categoryId,
+    },
+  });
+
+  return res.status(201).send(newAudioBook);
 });
+*/
 
-router.put("/:id", (req, res) => {
-  const audiobook = audioBooks.find((ab) => ab.title === req.params.id);
+/*
+router.put("/:id", async (req, res) => {
+  const audioBook = await prisma.audioBook.findFirst({
+    where: { id: req.params.id },
+  });
 
-  if (!audiobook) return res.status(404).send("Kan inte hitta ljudboken");
+  if (!audioBook) return res.status(404).send("Kan inte hitta ljudboken");
 
   const validation = validateArticle(req.body);
 
   if (!validation.success)
     return res.status(404).send(validation.error.issues[0]?.message);
 
-  audiobook.title = req.body.title;
-  audiobook.runTimeMinutes = req.body.runTimeMinutes;
-  audiobook.type = req.body.type;
-  audiobook.isBorrowable = true;
-  audiobook.categoryId = req.body.categoryId.category;
+  const updatedAudioBook = await prisma.audioBook.update({
+    where: { id: req.params.id },
+    data: {
+      title: req.body.title,
+      runTimeMinutes: req.body.runTimeMinutes,
+      type: req.body.type,
+      isBorrowable: req.body.isBorrowable,
+      categoryId: req.body.categoryId,
+    },
+  });
 
-  return res.send(audiobook);
+  return res.send(updatedAudioBook);
 });
+*/
 
-router.delete("/:id", (req, res) => {
-  const audioBook = audioBooks.find((ab) => ab.title === req.params.id);
+router.delete("/:id", async (req, res) => {
+  const audioBook = await prisma.audioBook.findFirst({
+    where: { id: req.params.id },
+  });
 
-  if (!audioBook) return res.status(404).send("Kan inte hitta ljudboken");
+  if (!audioBook) return res.status(404).send("Kan inte hitta kategorien");
 
-  audioBooks.splice(audioBooks.indexOf(audioBook), 1);
+  const deletedAudioBook = await prisma.audioBook.delete({
+    where: { id: req.params.id },
+  });
 
-  return res.send(audioBook);
+  return res.send(deletedAudioBook);
 });
-
 export default router;

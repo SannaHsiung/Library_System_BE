@@ -1,47 +1,9 @@
 import express from "express";
-import { Category } from "./categories";
-import { validateArticle } from "../schemas/Article";
 import { PrismaClient } from "@prisma/client";
+// import { validateArticle } from "../schemas/Article";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
-export interface Book {
-  id: string;
-  title: string;
-  author: string;
-  nbrPages: number;
-  type: "Bok";
-  isBorrowable: boolean;
-  categoryId: Category;
-}
-
-const books: Book[] = [
-  {
-    id: "56",
-    title: "The Da Vinci Code",
-    author: "Dan Brown",
-    nbrPages: 689,
-    type: "Bok",
-    isBorrowable: true,
-    categoryId: {
-      id: "1000",
-      name: "Skönlitteratur",
-    },
-  },
-  {
-    id: "59",
-    title: "Black Holes",
-    author: "Brian Cox",
-    nbrPages: 288,
-    type: "Bok",
-    isBorrowable: true,
-    categoryId: {
-      id: "1002",
-      name: "Naturvetenskap",
-    },
-  },
-];
 
 router.get("/", async (req, res) => {
   const books = await prisma.book.findMany();

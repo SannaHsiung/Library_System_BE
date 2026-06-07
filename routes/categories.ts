@@ -1,52 +1,9 @@
 import express from "express";
-import { validateCategory } from "../schemas/Category";
 import { PrismaClient } from "@prisma/client";
+import { validateCategory } from "../schemas/Category";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
-export interface Category {
-  id: string;
-  name: string;
-}
-
-const categories: Category[] = [
-  {
-    id: "1000",
-    name: "Skönlitteratur",
-  },
-  {
-    id: "1001",
-    name: "Arkeologi",
-  },
-
-  {
-    id: "1002",
-    name: "Naturvetenskap",
-  },
-
-  {
-    id: "1005",
-    name: "Musikalier",
-  },
-  {
-    id: "1006",
-    name: "Science Fiction",
-  },
-
-  {
-    id: "1009",
-    name: "Religion och mytologi",
-  },
-  {
-    id: "1010",
-    name: "Geografi och lokalhistoria",
-  },
-];
-
-export function getCategories() {
-  return categories;
-}
 
 router.get("/", async (req, res) => {
   const categories = await prisma.category.findMany();

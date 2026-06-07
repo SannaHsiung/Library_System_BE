@@ -1,44 +1,9 @@
 import express from "express";
-import { Category } from "./categories";
-import { validateArticle } from "../schemas/Article";
 import { PrismaClient } from "@prisma/client";
+// import { validateArticle } from "../schemas/Article";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
-export interface AudioBook {
-  id: string;
-  title: string;
-  runTimeMinutes: number;
-  type: "Ljudbok";
-  isBorrowable: boolean;
-  categoryId: Category;
-}
-
-const audioBooks: AudioBook[] = [
-  {
-    id: "22",
-    title: "Angels & Demons",
-    runTimeMinutes: 1114,
-    type: "Ljudbok",
-    isBorrowable: true,
-    categoryId: {
-      id: "1000",
-      name: "Skönlitteratur",
-    },
-  },
-  {
-    id: "28",
-    title: "Underwater Archaeology",
-    runTimeMinutes: 342,
-    type: "Ljudbok",
-    isBorrowable: true,
-    categoryId: {
-      id: "1001",
-      name: "Arkeologi",
-    },
-  },
-];
 
 router.get("/", async (req, res) => {
   const audioBooks = await prisma.audioBook.findMany();

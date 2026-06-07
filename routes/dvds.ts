@@ -1,44 +1,9 @@
 import express from "express";
-import { Category } from "./categories";
-import { validateArticle } from "../schemas/Article";
 import { PrismaClient } from "@prisma/client";
+//import { validateArticle } from "../schemas/Article";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
-export interface Dvd {
-  id: string;
-  title: string;
-  runTimeMinutes: number;
-  type: "Dvd";
-  isBorrowable: boolean;
-  categoryId: Category;
-}
-
-const dvds: Dvd[] = [
-  {
-    id: "101",
-    title: "KPop Demon Hunters",
-    runTimeMinutes: 95,
-    type: "Dvd",
-    isBorrowable: false,
-    categoryId: {
-      id: "1005",
-      name: "Musikalier",
-    },
-  },
-  {
-    id: "102",
-    title: "The Martian",
-    runTimeMinutes: 142,
-    type: "Dvd",
-    isBorrowable: true,
-    categoryId: {
-      id: "1006",
-      name: "Science Fiction",
-    },
-  },
-];
 
 router.get("/", async (req, res) => {
   const dvds = await prisma.dvd.findMany();

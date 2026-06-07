@@ -1,47 +1,9 @@
 import express from "express";
-import { Category } from "./categories";
-import { validateArticle } from "../schemas/Article";
 import { PrismaClient } from "@prisma/client";
+// import { validateArticle } from "../schemas/Article";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
-export interface ReferenceBook {
-  id: string;
-  title: string;
-  author: string;
-  nbrPages: number;
-  type: "Uppslagsbok";
-  isBorrowable: false;
-  categoryId: Category;
-}
-
-const referenceBooks: ReferenceBook[] = [
-  {
-    id: "581",
-    title: "Mythology",
-    author: "Edith Hamilton",
-    nbrPages: 497,
-    type: "Uppslagsbok",
-    isBorrowable: false,
-    categoryId: {
-      id: "1009",
-      name: "Religion och mytologi",
-    },
-  },
-  {
-    id: "687",
-    title: "Atlas of Unexpected Places",
-    author: "Elborough Travis",
-    nbrPages: 224,
-    type: "Uppslagsbok",
-    isBorrowable: false,
-    categoryId: {
-      id: "1010",
-      name: "Geografi och lokalhistoria",
-    },
-  },
-];
 
 router.get("/", async (req, res) => {
   const referenceBooks = await prisma.referenceBook.findMany();

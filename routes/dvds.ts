@@ -1,5 +1,6 @@
 import express from "express";
-import { Category } from "./categories";
+import { Category, getCategories } from "./categories";
+import { validateArticle } from "../schemas/Article";
 
 const router = express.Router();
 
@@ -59,6 +60,24 @@ router.get("/:titleRoute", (req, res) => {
   if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
 
   return res.send(dvd);
+});
+
+router.post("/", (req, res) => {
+  const validation = validateArticle(req.body);
+
+  if (!validation.success) return res.status(400).send(validation.error.issues);
+
+  const dvd: Dvd = {
+    title: req.body.title,
+    runTimeMinutes: req.body.runTimeMinutes,
+    type: req.body.type,
+    isBorrowable: true,
+    categoryId: req.body.categoryId.category,
+  };
+
+  dvds.push(dvd);
+
+  return res.status(201).send(dvd);
 });
 
 export default router;

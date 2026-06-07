@@ -1,5 +1,6 @@
 import express from "express";
-import { Category } from "./categories";
+import { Category, getCategories } from "./categories";
+import { validateArticle } from "../schemas/Article";
 
 const router = express.Router();
 
@@ -65,6 +66,25 @@ router.get("/:titleRoute", (req, res) => {
   if (!book) return res.status(404).send("Kan inte hitta boken");
 
   return res.send(book);
+});
+
+router.post("/", (req, res) => {
+  const validation = validateArticle(req.body);
+
+  if (!validation.success) return res.status(400).send(validation.error.issues);
+
+  const book: Book = {
+    title: req.body.title,
+    author: req.body.author,
+    nbrPages: req.body.nbrPages,
+    type: req.body.type,
+    isBorrowable: true,
+    categoryId: req.body.categoryId.category,
+  };
+
+  books.push(book);
+
+  return res.status(201).send(book);
 });
 
 export default router;

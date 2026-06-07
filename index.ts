@@ -7,6 +7,7 @@ import referenceBooks from "./routes/referenceBooks";
 
 const app = express();
 
+app.use(express.json());
 app.use("/api/categories", categories);
 app.use("/api/books", books);
 app.use("/api/dvds", dvds);

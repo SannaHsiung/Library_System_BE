@@ -1,5 +1,6 @@
 import express from "express";
-import { Category } from "./categories";
+import { Category, getCategories } from "./categories";
+import { validateArticle } from "../schemas/Article";
 
 const router = express.Router();
 
@@ -45,6 +46,24 @@ router.get("/:titleRoute", (req, res) => {
   if (!audioBook) return res.status(404).send("Kan inte hitta ljudboken");
 
   return res.send(audioBook);
+});
+
+router.post("/", (req, res) => {
+  const validation = validateArticle(req.body);
+
+  if (!validation.success) return res.status(400).send(validation.error.issues);
+
+  const audioBook: AudioBook = {
+    title: req.body.title,
+    runTimeMinutes: req.body.runTimeMinutes,
+    type: req.body.type,
+    isBorrowable: true,
+    categoryId: req.body.categoryId.category,
+  };
+
+  audioBooks.push(audioBook);
+
+  return res.status(201).send(audioBook);
 });
 
 export default router;

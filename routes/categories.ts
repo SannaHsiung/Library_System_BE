@@ -1,4 +1,5 @@
 import express from "express";
+import { validateCategory } from "../schemas/Category";
 
 const router = express.Router();
 
@@ -45,6 +46,10 @@ const categories: Category[] = [
   },
 ];
 
+export function getCategories() {
+  return categories;
+}
+
 router.get("/", (req, res) => {
   return res.send(categories);
 });
@@ -57,6 +62,22 @@ router.get("/:categoryRoute", (req, res) => {
   if (!category) return res.status(404).send("Kan inte hitta kategorien");
 
   return res.send(category);
+});
+
+router.post("/", (req, res) => {
+  const validation = validateCategory(req.body);
+  console.log(req.body);
+
+  if (!validation.success)
+    return res.status(404).send(validation.error.issues[0]?.message);
+
+  const category: Category = {
+    category: req.body.category,
+  };
+
+  categories.push(category);
+
+  return res.status(201).send(category);
 });
 
 export default router;

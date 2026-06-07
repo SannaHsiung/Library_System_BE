@@ -1,9 +1,17 @@
 import express from "express";
 import categories from "./routes/categories";
+import books from "./routes/books";
+import dvds from "./routes/dvds";
+import audioBooks from "./routes/audioBooks";
+import referenceBooks from "./routes/referenceBooks";
 
 const app = express();
 
 app.use("/api/categories", categories);
+app.use("/api/books", books);
+app.use("/api/dvds", dvds);
+app.use("/api/audioBooks", audioBooks);
+app.use("/api/referenceBooks", referenceBooks);
 
 const PORT = 5678;
 

@@ -100,4 +100,14 @@ router.put("/:titleRoute", (req, res) => {
   return res.send(dvd);
 });
 
+router.delete("/:titleRoute", (req, res) => {
+  const dvd = dvds.find((d) => d.title === req.params.titleRoute);
+
+  if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
+
+  dvds.splice(dvds.indexOf(dvd), 1);
+
+  return res.send(dvd);
+});
+
 export default router;

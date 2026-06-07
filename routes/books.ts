@@ -108,4 +108,14 @@ router.put("/:titleRoute", (req, res) => {
   return res.send(book);
 });
 
+router.delete("/:titleRoute", (req, res) => {
+  const book = books.find((b) => b.title === req.params.titleRoute);
+
+  if (!book) return res.status(404).send("Kan inte hitta boken");
+
+  books.splice(books.indexOf(book), 1);
+
+  return res.send(book);
+});
+
 export default router;

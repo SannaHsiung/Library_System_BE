@@ -97,4 +97,16 @@ router.put("/:categoryRoute", (req, res) => {
   return res.send(category);
 });
 
+router.delete("/:categoryRoute", (req, res) => {
+  const category = categories.find(
+    (c) => c.category === req.params.categoryRoute,
+  );
+
+  if (!category) return res.status(404).send("Kan inte hitta kategorien");
+
+  categories.splice(categories.indexOf(category), 1);
+
+  return res.send(category);
+});
+
 export default router;

@@ -86,4 +86,14 @@ router.put("/:titleRoute", (req, res) => {
   return res.send(audiobook);
 });
 
+router.delete("/:titleRoute", (req, res) => {
+  const audioBook = audioBooks.find((ab) => ab.title === req.params.titleRoute);
+
+  if (!audioBook) return res.status(404).send("Kan inte hitta ljudboken");
+
+  audioBooks.splice(audioBooks.indexOf(audioBook), 1);
+
+  return res.send(audioBook);
+});
+
 export default router;

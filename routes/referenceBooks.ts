@@ -90,4 +90,16 @@ router.put("/:titleRoute", (req, res) => {
   return res.send(referenceBook);
 });
 
+router.delete("/:titleRoute", (req, res) => {
+  const referenceBook = referenceBooks.find(
+    (refBook) => refBook.title === req.params.titleRoute,
+  );
+
+  if (!referenceBook) return res.status(404).send("Kan inte hitta boken");
+
+  referenceBooks.splice(referenceBooks.indexOf(referenceBook), 1);
+
+  return res.send(referenceBook);
+});
+
 export default router;

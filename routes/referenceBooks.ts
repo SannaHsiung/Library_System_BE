@@ -50,7 +50,8 @@ router.get("/:titleRoute", (req, res) => {
 router.post("/", (req, res) => {
   const validation = validateArticle(req.body);
 
-  if (!validation.success) return res.status(400).send(validation.error.issues);
+  if (!validation.success)
+    return res.status(400).send(validation.error.issues[0]?.message);
 
   const referenceBook: ReferenceBook = {
     title: req.body.title,
@@ -64,6 +65,29 @@ router.post("/", (req, res) => {
   referenceBooks.push(referenceBook);
 
   return res.status(201).send(referenceBook);
+});
+
+router.put("/:titleRoute", (req, res) => {
+  const referenceBook = referenceBooks.find(
+    (refBook) => refBook.title === req.params.titleRoute,
+  );
+
+  if (!referenceBook)
+    return res.status(404).send("Kan inte hitta uppslagsboken");
+
+  const validation = validateArticle(req.body);
+
+  if (!validation.success)
+    return res.status(404).send(validation.error.issues[0]?.message);
+
+  referenceBook.title = req.body.title;
+  referenceBook.author = req.body.author;
+  referenceBook.type = req.body.type;
+  referenceBook.nbrPages = req.body.nbrPages;
+  referenceBook.isBorrowable = false;
+  referenceBook.categoryId = req.body.categoryId.category;
+
+  return res.send(referenceBook);
 });
 
 export default router;

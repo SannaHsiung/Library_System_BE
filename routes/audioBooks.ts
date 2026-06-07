@@ -51,7 +51,8 @@ router.get("/:titleRoute", (req, res) => {
 router.post("/", (req, res) => {
   const validation = validateArticle(req.body);
 
-  if (!validation.success) return res.status(400).send(validation.error.issues);
+  if (!validation.success)
+    return res.status(400).send(validation.error.issues[0]?.message);
 
   const audioBook: AudioBook = {
     title: req.body.title,
@@ -64,6 +65,25 @@ router.post("/", (req, res) => {
   audioBooks.push(audioBook);
 
   return res.status(201).send(audioBook);
+});
+
+router.put("/:titleRoute", (req, res) => {
+  const audiobook = audioBooks.find((ab) => ab.title === req.params.titleRoute);
+
+  if (!audiobook) return res.status(404).send("Kan inte hitta ljudboken");
+
+  const validation = validateArticle(req.body);
+
+  if (!validation.success)
+    return res.status(404).send(validation.error.issues[0]?.message);
+
+  audiobook.title = req.body.title;
+  audiobook.runTimeMinutes = req.body.runTimeMinutes;
+  audiobook.type = req.body.type;
+  audiobook.isBorrowable = true;
+  audiobook.categoryId = req.body.categoryId.category;
+
+  return res.send(audiobook);
 });
 
 export default router;

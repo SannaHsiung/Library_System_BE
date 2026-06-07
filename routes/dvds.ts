@@ -65,7 +65,8 @@ router.get("/:titleRoute", (req, res) => {
 router.post("/", (req, res) => {
   const validation = validateArticle(req.body);
 
-  if (!validation.success) return res.status(400).send(validation.error.issues);
+  if (!validation.success)
+    return res.status(400).send(validation.error.issues[0]?.message);
 
   const dvd: Dvd = {
     title: req.body.title,
@@ -78,6 +79,25 @@ router.post("/", (req, res) => {
   dvds.push(dvd);
 
   return res.status(201).send(dvd);
+});
+
+router.put("/:titleRoute", (req, res) => {
+  const dvd = dvds.find((d) => d.title === req.params.titleRoute);
+
+  if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
+
+  const validation = validateArticle(req.body);
+
+  if (!validation.success)
+    return res.status(404).send(validation.error.issues[0]?.message);
+
+  dvd.title = req.body.title;
+  dvd.runTimeMinutes = req.body.runTimeMinutes;
+  dvd.type = req.body.type;
+  dvd.isBorrowable = true;
+  dvd.categoryId = req.body.categoryId.category;
+
+  return res.send(dvd);
 });
 
 export default router;

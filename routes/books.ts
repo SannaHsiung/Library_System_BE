@@ -71,7 +71,8 @@ router.get("/:titleRoute", (req, res) => {
 router.post("/", (req, res) => {
   const validation = validateArticle(req.body);
 
-  if (!validation.success) return res.status(400).send(validation.error.issues);
+  if (!validation.success)
+    return res.status(400).send(validation.error.issues[0]?.message);
 
   const book: Book = {
     title: req.body.title,
@@ -85,6 +86,26 @@ router.post("/", (req, res) => {
   books.push(book);
 
   return res.status(201).send(book);
+});
+
+router.put("/:titleRoute", (req, res) => {
+  const book = books.find((b) => b.title === req.params.titleRoute);
+
+  if (!book) return res.status(404).send("Kan inte hitta boken");
+
+  const validation = validateArticle(req.body);
+
+  if (!validation.success)
+    return res.status(404).send(validation.error.issues[0]?.message);
+
+  book.title = req.body.title;
+  book.author = req.body.author;
+  book.type = req.body.type;
+  book.nbrPages = req.body.nbrPages;
+  book.isBorrowable = true;
+  book.categoryId = req.body.categoryId.category;
+
+  return res.send(book);
 });
 
 export default router;

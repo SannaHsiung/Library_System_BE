@@ -80,4 +80,21 @@ router.post("/", (req, res) => {
   return res.status(201).send(category);
 });
 
+router.put("/:categoryRoute", (req, res) => {
+  const category = categories.find(
+    (c) => c.category === req.params.categoryRoute,
+  );
+
+  if (!category) return res.status(404).send("Kan inte hitta kategorien");
+
+  const validation = validateCategory(req.body);
+
+  if (!validation.success)
+    return res.status(404).send(validation.error.issues[0]?.message);
+
+  category.category = req.body.category;
+
+  return res.send(category);
+});
+
 export default router;

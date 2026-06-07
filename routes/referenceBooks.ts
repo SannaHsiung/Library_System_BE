@@ -6,7 +6,8 @@ import { PrismaClient } from "@prisma/client";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-interface ReferenceBook {
+export interface ReferenceBook {
+  id: string;
   title: string;
   author: string;
   nbrPages: number;
@@ -17,20 +18,28 @@ interface ReferenceBook {
 
 const referenceBooks: ReferenceBook[] = [
   {
+    id: "581",
     title: "Mythology",
     author: "Edith Hamilton",
     nbrPages: 497,
     type: "Uppslagsbok",
     isBorrowable: false,
-    categoryId: { category: "Religion och mytologi" },
+    categoryId: {
+      id: "1009",
+      name: "Religion och mytologi",
+    },
   },
   {
+    id: "687",
     title: "Atlas of Unexpected Places",
     author: "Elborough Travis",
     nbrPages: 224,
     type: "Uppslagsbok",
     isBorrowable: false,
-    categoryId: { category: "Geografi och lokalhistoria" },
+    categoryId: {
+      id: "1010",
+      name: "Geografi och lokalhistoria",
+    },
   },
 ];
 
@@ -39,18 +48,18 @@ router.get("/", async (req, res) => {
   return res.send(referenceBooks);
 });
 
-//nedan ska fixas
+router.get("/:id", async (req, res) => {
+  const dvd = await prisma.referenceBook.findFirst({
+    where: { id: req.params.id },
+  });
 
-router.get("/:titleRoute", (req, res) => {
-  const referenceBook = referenceBooks.find(
-    (refBook) => refBook.title === req.params.titleRoute,
-  );
+  if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
 
-  if (!referenceBook)
-    return res.status(404).send("Kan inte hitta uppslagsboken");
-
-  return res.send(referenceBook);
+  return res.send(dvd);
 });
+
+//håller på att fixa
+//nedan ska fixas
 
 router.post("/", (req, res) => {
   const validation = validateArticle(req.body);
@@ -59,6 +68,7 @@ router.post("/", (req, res) => {
     return res.status(400).send(validation.error.issues[0]?.message);
 
   const referenceBook: ReferenceBook = {
+    id: Date.now().toString(),
     title: req.body.title,
     author: req.body.author,
     nbrPages: req.body.nbrPages,
@@ -72,9 +82,9 @@ router.post("/", (req, res) => {
   return res.status(201).send(referenceBook);
 });
 
-router.put("/:titleRoute", (req, res) => {
+router.put("/:id", (req, res) => {
   const referenceBook = referenceBooks.find(
-    (refBook) => refBook.title === req.params.titleRoute,
+    (refBook) => refBook.title === req.params.id,
   );
 
   if (!referenceBook)
@@ -95,9 +105,9 @@ router.put("/:titleRoute", (req, res) => {
   return res.send(referenceBook);
 });
 
-router.delete("/:titleRoute", (req, res) => {
+router.delete("/:id", (req, res) => {
   const referenceBook = referenceBooks.find(
-    (refBook) => refBook.title === req.params.titleRoute,
+    (refBook) => refBook.title === req.params.id,
   );
 
   if (!referenceBook) return res.status(404).send("Kan inte hitta boken");

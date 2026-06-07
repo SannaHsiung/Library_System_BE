@@ -6,7 +6,8 @@ import { PrismaClient } from "@prisma/client";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-interface AudioBook {
+export interface AudioBook {
+  id: string;
   title: string;
   runTimeMinutes: number;
   type: "Ljudbok";
@@ -16,25 +17,26 @@ interface AudioBook {
 
 const audioBooks: AudioBook[] = [
   {
+    id: "22",
     title: "Angels & Demons",
     runTimeMinutes: 1114,
     type: "Ljudbok",
-    isBorrowable: false,
-    categoryId: { category: "Skönlitteratur" },
+    isBorrowable: true,
+    categoryId: {
+      id: "1000",
+      name: "Skönlitteratur",
+    },
   },
   {
+    id: "28",
     title: "Underwater Archaeology",
     runTimeMinutes: 342,
     type: "Ljudbok",
     isBorrowable: true,
-    categoryId: { category: "Arkeologi" },
-  },
-  {
-    title: "The Second World War",
-    runTimeMinutes: 244,
-    type: "Ljudbok",
-    isBorrowable: true,
-    categoryId: { category: "Historia" },
+    categoryId: {
+      id: "1001",
+      name: "Arkeologi",
+    },
   },
 ];
 
@@ -43,15 +45,18 @@ router.get("/", async (req, res) => {
   return res.send(audioBooks);
 });
 
-//nedan ska fixas
-
-router.get("/:titleRoute", (req, res) => {
-  const audioBook = audioBooks.find((ab) => ab.title === req.params.titleRoute);
+router.get("/:id", async (req, res) => {
+  const audioBook = await prisma.audioBook.findFirst({
+    where: { id: req.params.id },
+  });
 
   if (!audioBook) return res.status(404).send("Kan inte hitta ljudboken");
 
   return res.send(audioBook);
 });
+
+//håller på att fixa
+//nedan ska fixas
 
 router.post("/", (req, res) => {
   const validation = validateArticle(req.body);
@@ -60,6 +65,7 @@ router.post("/", (req, res) => {
     return res.status(400).send(validation.error.issues[0]?.message);
 
   const audioBook: AudioBook = {
+    id: Date.now().toString(),
     title: req.body.title,
     runTimeMinutes: req.body.runTimeMinutes,
     type: req.body.type,
@@ -72,8 +78,8 @@ router.post("/", (req, res) => {
   return res.status(201).send(audioBook);
 });
 
-router.put("/:titleRoute", (req, res) => {
-  const audiobook = audioBooks.find((ab) => ab.title === req.params.titleRoute);
+router.put("/:id", (req, res) => {
+  const audiobook = audioBooks.find((ab) => ab.title === req.params.id);
 
   if (!audiobook) return res.status(404).send("Kan inte hitta ljudboken");
 
@@ -91,8 +97,8 @@ router.put("/:titleRoute", (req, res) => {
   return res.send(audiobook);
 });
 
-router.delete("/:titleRoute", (req, res) => {
-  const audioBook = audioBooks.find((ab) => ab.title === req.params.titleRoute);
+router.delete("/:id", (req, res) => {
+  const audioBook = audioBooks.find((ab) => ab.title === req.params.id);
 
   if (!audioBook) return res.status(404).send("Kan inte hitta ljudboken");
 

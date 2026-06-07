@@ -6,45 +6,41 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 export interface Category {
-  category: string;
+  id: string;
+  name: string;
 }
 
 const categories: Category[] = [
   {
-    category: "Skönlitteratur",
+    id: "1000",
+    name: "Skönlitteratur",
   },
   {
-    category: "Arkeologi",
+    id: "1001",
+    name: "Arkeologi",
+  },
+
+  {
+    id: "1002",
+    name: "Naturvetenskap",
+  },
+
+  {
+    id: "1005",
+    name: "Musikalier",
   },
   {
-    category: "Historia",
+    id: "1006",
+    name: "Science Fiction",
+  },
+
+  {
+    id: "1009",
+    name: "Religion och mytologi",
   },
   {
-    category: "Filosofi och psykologi",
-  },
-  {
-    category: "Ekonomi och näringsväsen",
-  },
-  {
-    category: "Musikalier",
-  },
-  {
-    category: "Science Fiction",
-  },
-  {
-    category: "Fantasy",
-  },
-  {
-    category: "Action",
-  },
-  {
-    category: "Religion och mytologi",
-  },
-  {
-    category: "Geografi och lokalhistoria",
-  },
-  {
-    category: "Naturvetenskap",
+    id: "1010",
+    name: "Geografi och lokalhistoria",
   },
 ];
 
@@ -57,17 +53,18 @@ router.get("/", async (req, res) => {
   return res.send(categories);
 });
 
-//nedan ska fixas
-
-router.get("/:categoryRoute", (req, res) => {
-  const category = categories.find(
-    (c) => c.category === req.params.categoryRoute,
-  );
+router.get("/:id", async (req, res) => {
+  const category = await prisma.category.findFirst({
+    where: { id: req.params.id },
+  });
 
   if (!category) return res.status(404).send("Kan inte hitta kategorien");
 
   return res.send(category);
 });
+
+//håller på att fixa
+//nedan ska fixas
 
 router.post("/", (req, res) => {
   const validation = validateCategory(req.body);
@@ -77,7 +74,8 @@ router.post("/", (req, res) => {
     return res.status(404).send(validation.error.issues[0]?.message);
 
   const category: Category = {
-    category: req.body.category,
+    id: req.body.id,
+    name: req.body.name,
   };
 
   categories.push(category);
@@ -85,27 +83,26 @@ router.post("/", (req, res) => {
   return res.status(201).send(category);
 });
 
-router.put("/:categoryRoute", (req, res) => {
-  const category = categories.find(
-    (c) => c.category === req.params.categoryRoute,
-  );
+router.put("/:id", (req, res) => {
+  const existing = categories.find((c) => c.id === req.params.id);
 
-  if (!category) return res.status(404).send("Kan inte hitta kategorien");
+  if (!existing) return res.status(404).send("Kan inte hitta kategorien");
 
   const validation = validateCategory(req.body);
 
   if (!validation.success)
     return res.status(404).send(validation.error.issues[0]?.message);
 
-  category.category = req.body.category;
+  const category: Category = {
+    id: req.body.id,
+    name: req.body.name,
+  };
 
   return res.send(category);
 });
 
-router.delete("/:categoryRoute", (req, res) => {
-  const category = categories.find(
-    (c) => c.category === req.params.categoryRoute,
-  );
+router.delete("/:id", (req, res) => {
+  const category = categories.find((c) => c.id === req.params.id);
 
   if (!category) return res.status(404).send("Kan inte hitta kategorien");
 

@@ -6,7 +6,8 @@ import { PrismaClient } from "@prisma/client";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-interface Dvd {
+export interface Dvd {
+  id: string;
   title: string;
   runTimeMinutes: number;
   type: "Dvd";
@@ -16,39 +17,26 @@ interface Dvd {
 
 const dvds: Dvd[] = [
   {
+    id: "101",
     title: "KPop Demon Hunters",
     runTimeMinutes: 95,
     type: "Dvd",
     isBorrowable: false,
-    categoryId: { category: "Musikalier" },
+    categoryId: {
+      id: "1005",
+      name: "Musikalier",
+    },
   },
   {
+    id: "102",
     title: "The Martian",
     runTimeMinutes: 142,
     type: "Dvd",
     isBorrowable: true,
-    categoryId: { category: "Science Fiction" },
-  },
-  {
-    title: "Moulin Rouge!",
-    runTimeMinutes: 127,
-    type: "Dvd",
-    isBorrowable: true,
-    categoryId: { category: "Musikalier" },
-  },
-  {
-    title: "How to Train Your Dragon",
-    runTimeMinutes: 98,
-    type: "Dvd",
-    isBorrowable: true,
-    categoryId: { category: "Fantasy" },
-  },
-  {
-    title: "Gladiator",
-    runTimeMinutes: 155,
-    type: "Dvd",
-    isBorrowable: true,
-    categoryId: { category: "Action" },
+    categoryId: {
+      id: "1006",
+      name: "Science Fiction",
+    },
   },
 ];
 
@@ -57,15 +45,18 @@ router.get("/", async (req, res) => {
   return res.send(dvds);
 });
 
-//nedan ska fixas
-
-router.get("/:titleRoute", (req, res) => {
-  const dvd = dvds.find((d) => d.title === req.params.titleRoute);
+router.get("/:id", async (req, res) => {
+  const dvd = await prisma.dvd.findFirst({
+    where: { id: req.params.id },
+  });
 
   if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
 
   return res.send(dvd);
 });
+
+//håller på att fixa
+//nedan ska fixas
 
 router.post("/", (req, res) => {
   const validation = validateArticle(req.body);
@@ -74,6 +65,7 @@ router.post("/", (req, res) => {
     return res.status(400).send(validation.error.issues[0]?.message);
 
   const dvd: Dvd = {
+    id: Date.now().toString(),
     title: req.body.title,
     runTimeMinutes: req.body.runTimeMinutes,
     type: req.body.type,
@@ -86,8 +78,8 @@ router.post("/", (req, res) => {
   return res.status(201).send(dvd);
 });
 
-router.put("/:titleRoute", (req, res) => {
-  const dvd = dvds.find((d) => d.title === req.params.titleRoute);
+router.put("/:id", (req, res) => {
+  const dvd = dvds.find((d) => d.title === req.params.id);
 
   if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
 
@@ -105,8 +97,8 @@ router.put("/:titleRoute", (req, res) => {
   return res.send(dvd);
 });
 
-router.delete("/:titleRoute", (req, res) => {
-  const dvd = dvds.find((d) => d.title === req.params.titleRoute);
+router.delete("/:id", (req, res) => {
+  const dvd = dvds.find((d) => d.title === req.params.id);
 
   if (!dvd) return res.status(404).send("Kan inte hitta dvd:n");
 

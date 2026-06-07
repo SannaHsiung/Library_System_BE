@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 const schema = z.object({
-  category: z.string().min(1, "Måste ange namn på kategori"),
+  id: z.string().optional(),
+  name: z.string().min(1, "Måste ange namn på kategori"),
 });
 
 type Formdata = z.infer<typeof schema>;

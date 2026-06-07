@@ -14,7 +14,8 @@ datasource db {
 }
 
 model Category {
-  category       String          @unique
+  id             String          @id @default(cuid())
+  name           String
   dvds           Dvd[]
   audioBooks     AudioBook[]
   books          Book[]
@@ -22,39 +23,43 @@ model Category {
 }
 
 model Dvd {
-  title          String   @unique
+  id             String   @id @default(cuid())
+  title          String
   runTimeMinutes Int
   type           String
   isBorrowable   Boolean
   categoryId     String
-  category       Category @relation(fields: [categoryId], references: [category])
+  category       Category @relation(fields: [categoryId], references: [id])
 }
 
 model AudioBook {
-  title          String   @unique
+  id             String   @id @default(cuid())
+  title          String
   runTimeMinutes Int
   type           String
   isBorrowable   Boolean
   categoryId     String
-  category       Category @relation(fields: [categoryId], references: [category])
+  category       Category @relation(fields: [categoryId], references: [id])
 }
 
 model Book {
-  title        String   @unique
+  id           String   @id @default(cuid())
+  title        String
   author       String
   nbrPages     Int
   type         String
   isBorrowable Boolean
   categoryId   String
-  category     Category @relation(fields: [categoryId], references: [category])
+  category     Category @relation(fields: [categoryId], references: [id])
 }
 
 model ReferenceBook {
-  title        String   @unique
+  id           String   @id @default(cuid())
+  title        String
   author       String
   nbrPages     Int
   type         String
   isBorrowable Boolean
   categoryId   String
-  category     Category @relation(fields: [categoryId], references: [category])
+  category     Category @relation(fields: [categoryId], references: [id])
 }
